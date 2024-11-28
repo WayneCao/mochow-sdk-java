@@ -23,6 +23,7 @@ import lombok.Setter;
 
 import com.baidu.mochow.model.enums.IndexState;
 import com.baidu.mochow.model.enums.IndexType;
+import com.baidu.mochow.model.enums.InvertedIndexFieldAttribute;
 import com.baidu.mochow.model.enums.MetricType;
 
 @Getter
@@ -33,6 +34,8 @@ import com.baidu.mochow.model.enums.MetricType;
 public class IndexField {
     private String indexName;
     private String field;
+    private String[] fields;
+    private InvertedIndexFieldAttribute[] fieldAttributes;
     private IndexType indexType;
     private IndexState state;
 

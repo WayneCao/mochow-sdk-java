@@ -11,26 +11,25 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.baidu.mochow.model.enums;
+package com.baidu.mochow.model;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.List;
 
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    PUCK("PUCK"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED");
+import com.baidu.mochow.model.entity.SearchResultRow;
+import com.baidu.mochow.model.entity.BatchSearchResultRows;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-    private final String value;
+@Getter
+@Setter
+@NoArgsConstructor
+public class SearchRowResponse extends AbstractMochowResponse  {
+    @JsonProperty("rows")
+    List<SearchResultRow> rows; // for single search
 
-    private IndexType(String value) {
-        this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+    @JsonProperty("results")
+    List<BatchSearchResultRows> batchRows; // for batch search
 }
