@@ -39,6 +39,9 @@ public class IndexParamsDeserializer extends JsonDeserializer<IndexParams> {
                     case PUCK:
                         params = JsonUtils.fromJsonString(paramStr, PUCKParams.class);
                         break;
+                    case INVERTED_INDEX:
+                        params = JsonUtils.fromJsonString(paramStr, InvertedIndexParams.class);
+                        break;
                 }
                 return params;
             }

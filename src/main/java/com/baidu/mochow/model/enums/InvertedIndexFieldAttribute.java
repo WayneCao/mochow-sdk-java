@@ -15,17 +15,13 @@ package com.baidu.mochow.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    PUCK("PUCK"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED");
-
+public enum InvertedIndexFieldAttribute {
+    NOT_ANALYZED("ATTRIBUTE_NOT_ANALYZED"),
+    ANALYZED("ATTRIBUTE_ANALYZED");
 
     private final String value;
 
-    private IndexType(String value) {
+    private InvertedIndexFieldAttribute(String value) {
         this.value = value;
     }
 

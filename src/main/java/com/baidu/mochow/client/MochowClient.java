@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.baidu.mochow.auth.SignOptions;
 import com.baidu.mochow.http.Headers;
@@ -33,6 +34,7 @@ import com.baidu.mochow.internal.RestartableInputStream;
 import com.baidu.mochow.util.DateUtils;
 import com.baidu.mochow.util.HttpUtils;
 import com.baidu.mochow.util.JsonUtils;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.baidu.mochow.exception.MochowClientException;
 
 import com.baidu.mochow.model.AbstractMochowRequest;
@@ -59,6 +61,7 @@ import com.baidu.mochow.model.QueryResponse;
 import com.baidu.mochow.model.RebuildIndexRequest;
 import com.baidu.mochow.model.SearchRequest;
 import com.baidu.mochow.model.SearchResponse;
+import com.baidu.mochow.model.SearchRowResponse;
 import com.baidu.mochow.model.SelectRequest;
 import com.baidu.mochow.model.SelectResponse;
 import com.baidu.mochow.model.ShowTableStatsRequest;
@@ -69,6 +72,10 @@ import com.baidu.mochow.model.UpsertRequest;
 import com.baidu.mochow.model.BatchSearchRequest;
 import com.baidu.mochow.model.BatchSearchResponse;
 import com.baidu.mochow.model.UpsertResponse;
+import com.baidu.mochow.model.SearchRequest.BM25SearchRequestInterface;
+import com.baidu.mochow.model.SearchRequest.HybridSearchRequestInterface;
+import com.baidu.mochow.model.SearchRequest.SearchRequestInterface;
+import com.baidu.mochow.model.SearchRequest.VectorSearchRequestInterface;
 
 /**
  * Provides the client for accessing the Baidu VDB Service.
@@ -286,6 +293,52 @@ public class MochowClient extends AbstractMochowClient {
         return this.invokeHttpClient(internalRequest, QueryResponse.class);
     }
 
+    public SearchRowResponse vectorSearch(String databaseName,
+                                       String tableName,
+                                       VectorSearchRequestInterface request) throws MochowClientException {
+        return search(databaseName, tableName, request);
+    }
+
+    public SearchRowResponse bm25Search(String databaseName,
+                                     String tableName,
+                                     BM25SearchRequestInterface request) throws MochowClientException {
+        return search(databaseName, tableName, request);
+    }
+
+    public SearchRowResponse hybridSearch(String databaseName,
+                                       String tableName,
+                                       HybridSearchRequestInterface request) throws MochowClientException {
+        return search(databaseName, tableName, request);
+    }
+
+    private SearchRowResponse search(String databaseName, String tableName, SearchRequestInterface searchRequest) {
+        class Request extends AbstractMochowRequest {
+            public Request(Map<String, Object> fields) {
+                this.fields = fields;
+            }
+
+            @JsonValue
+            public Map<String, Object> toMap() {
+                return this.fields;
+            }
+
+            private Map<String, Object> fields;
+        }
+
+        Map<String, Object> fields = searchRequest.toMap();
+        fields.put("database", databaseName);
+        fields.put("table", tableName);
+
+        Request request = new Request(fields);
+
+        InternalRequest internalRequest = this.createRequest(request, HttpMethodName.POST, ROW_PREFIX);
+        internalRequest.addParameter(searchRequest.requestType(), "");
+        fillPayload(internalRequest, request);
+        return this.invokeHttpClient(internalRequest, SearchRowResponse.class);
+    }
+
+    /**
+     * Deprecated: Use {@link #vectorSearch} instead. */
     public SearchResponse search(SearchRequest request) throws MochowClientException {
         InternalRequest internalRequest = this.createRequest(request, HttpMethodName.POST, ROW_PREFIX);
         internalRequest.addParameter(SEARCH, "");
@@ -293,6 +346,8 @@ public class MochowClient extends AbstractMochowClient {
         return this.invokeHttpClient(internalRequest, SearchResponse.class);
     }
 
+    /**
+     * * Deprecated: Use {@link #vectorSearch} instead.*/
     public BatchSearchResponse batchSearch(BatchSearchRequest request) throws MochowClientException {
         InternalRequest internalRequest = this.createRequest(request, HttpMethodName.POST, ROW_PREFIX);
         internalRequest.addParameter(BATCH_SEARCH, "");

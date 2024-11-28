@@ -1,47 +1,56 @@
 package com.baidu.mochow.examples;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.baidu.mochow.client.ClientConfiguration;
+import com.baidu.mochow.client.MochowClient;
+import com.baidu.mochow.exception.MochowClientException;
 import com.baidu.mochow.exception.MochowServiceException;
 import com.baidu.mochow.model.AddFieldRequest;
+import com.baidu.mochow.model.BM25SearchRequest;
 import com.baidu.mochow.model.CreateTableRequest;
 import com.baidu.mochow.model.DeleteRequest;
 import com.baidu.mochow.model.DescribeIndexResponse;
 import com.baidu.mochow.model.DescribeTableResponse;
+import com.baidu.mochow.model.HybridSearchRequest;
 import com.baidu.mochow.model.QueryRequest;
 import com.baidu.mochow.model.QueryResponse;
-import com.baidu.mochow.model.SearchRequest;
-import com.baidu.mochow.model.SearchResponse;
+import com.baidu.mochow.model.SearchRowResponse;
 import com.baidu.mochow.model.SelectRequest;
 import com.baidu.mochow.model.SelectResponse;
 import com.baidu.mochow.model.ShowTableStatsResponse;
 import com.baidu.mochow.model.UpdateRequest;
 import com.baidu.mochow.model.UpsertRequest;
 import com.baidu.mochow.model.UpsertResponse;
-import com.baidu.mochow.model.entity.ANNSearchParams;
+import com.baidu.mochow.model.VectorBatchSearchRequest;
+import com.baidu.mochow.model.VectorRangeSearchRequest;
+import com.baidu.mochow.model.VectorTopkSearchRequest;
+import com.baidu.mochow.model.entity.DistanceRange;
 import com.baidu.mochow.model.entity.Field;
+import com.baidu.mochow.model.entity.FloatVector;
 import com.baidu.mochow.model.entity.HNSWParams;
-import com.baidu.mochow.model.entity.HNSWSearchParams;
+import com.baidu.mochow.model.entity.InvertedIndex;
+import com.baidu.mochow.model.entity.InvertedIndexParams;
 import com.baidu.mochow.model.entity.PartitionParams;
 import com.baidu.mochow.model.entity.Row;
 import com.baidu.mochow.model.entity.RowField;
 import com.baidu.mochow.model.entity.Schema;
 import com.baidu.mochow.model.entity.SecondaryIndex;
+import com.baidu.mochow.model.entity.Vector;
 import com.baidu.mochow.model.entity.VectorIndex;
+import com.baidu.mochow.model.entity.VectorSearchConfig;
 import com.baidu.mochow.model.enums.FieldType;
 import com.baidu.mochow.model.enums.IndexState;
 import com.baidu.mochow.model.enums.IndexType;
+import com.baidu.mochow.model.enums.InvertedIndexAnalyzer;
+import com.baidu.mochow.model.enums.InvertedIndexParseMode;
 import com.baidu.mochow.model.enums.MetricType;
 import com.baidu.mochow.model.enums.PartitionType;
 import com.baidu.mochow.model.enums.ReadConsistency;
 import com.baidu.mochow.model.enums.TableState;
-
-import com.baidu.mochow.client.MochowClient;
-import com.baidu.mochow.client.ClientConfiguration;
-import com.baidu.mochow.exception.MochowClientException;
 import com.baidu.mochow.util.JsonUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class MochowExample {
     private static final String DATABASE = "book";
@@ -148,7 +157,7 @@ public class MochowExample {
                 .addField(
                         Field.builder()
                                 .fieldName("segment")
-                                .fieldType(FieldType.STRING).build())
+                                .fieldType(FieldType.TEXT).build())
                 .addField(
                         Field.builder()
                                 .fieldName("vector")
@@ -163,6 +172,12 @@ public class MochowExample {
                                 .metricType(MetricType.L2)
                                 .autoBuild(false).build())
                 .addIndex(new SecondaryIndex("book_name_idx", "bookName"))
+                .addIndex(new InvertedIndex(
+                              "book_segment_inverted_idx",
+                              new String[]{"segment"},
+                              new InvertedIndexParams(
+                                  InvertedIndexAnalyzer.CHINESE_ANALYZER,
+                                  InvertedIndexParseMode.FINE_MODE)))
                 .build();
         CreateTableRequest createTableRequest = CreateTableRequest.builder()
                 .database(DATABASE)
@@ -295,18 +310,80 @@ public class MochowExample {
                 break;
             }
         }
-        SearchRequest searchRequest = SearchRequest.builder()
-                .database(DATABASE)
-                .table(TABLE)
-                .anns(
-                        ANNSearchParams.builder()
-                                .vectorField("vector")
-                                .vectorFloats(Arrays.asList(1F, 0.21F, 0.213F, 0F))
-                                .filter("bookName='三国演义'")
-                                .params(HNSWSearchParams.builder().ef(200).limit(10).build()).build()
-                ).build();
-        SearchResponse searchResponse = mochowClient.search(searchRequest);
-        System.out.printf("Search response: %s\n", JsonUtils.toJsonString(searchResponse));
+
+        this.topkSearch();
+        this.rangeSearch();
+        this.batchSearch();
+        this.bm25Search();
+        this.hybridSearch();
+    }
+
+    public void topkSearch() throws MochowClientException, InterruptedException {
+        FloatVector vector = new FloatVector(Arrays.asList(1F, 0.21F, 0.213F, 0F));
+        VectorTopkSearchRequest searchRequest = VectorTopkSearchRequest.builder("vector", vector, 10)
+            .filter("bookName='三国演义'")
+            .config(new VectorSearchConfig().setEf(200))
+            .build();
+
+        SearchRowResponse searchResponse = mochowClient.vectorSearch(DATABASE, TABLE, searchRequest);
+        System.out.printf("TopkSearch result: %s\n", JsonUtils.toJsonString(searchResponse.getRows()));
+    }
+
+    public void rangeSearch() throws MochowClientException, InterruptedException {
+        FloatVector vector = new FloatVector(Arrays.asList(1F, 0.21F, 0.213F, 0F));
+        VectorRangeSearchRequest searchRequest =
+            VectorRangeSearchRequest.builder("vector", vector, new DistanceRange(0, 20))
+                .filter("bookName='三国演义'")
+                .limit(15)
+                .projections(Arrays.asList("id", "vector"))
+                .config(new VectorSearchConfig().setEf(200))
+                .build();
+
+        SearchRowResponse searchResponse = mochowClient.vectorSearch(DATABASE, TABLE, searchRequest);
+        System.out.printf("RangeSearch result: %s\n", JsonUtils.toJsonString(searchResponse.getRows()));
+    }
+
+    public void batchSearch() throws MochowClientException, InterruptedException {
+        List<Vector> vectors = Arrays.asList(
+            new FloatVector(Arrays.asList(1F, 0.21F, 0.213F, 0F)),
+            new FloatVector(Arrays.asList(1F, 0.32F, 0.513F, 0F))
+        );
+        VectorBatchSearchRequest searchRequest = VectorBatchSearchRequest.builder("vector", vectors)
+            .filter("bookName='三国演义'")
+            .limit(10)
+            .config(new VectorSearchConfig().setEf(200))
+            .projections(Arrays.asList("id"))
+            .build();
+
+        SearchRowResponse searchResponse = mochowClient.vectorSearch(DATABASE, TABLE, searchRequest);
+        System.out.printf("BatchSearch result: %s\n", JsonUtils.toJsonString(searchResponse.getBatchRows()));
+    }
+
+    public void bm25Search() throws MochowClientException, InterruptedException {
+        BM25SearchRequest searchRequest = BM25SearchRequest.builder("book_segment_inverted_idx", "吕布")
+            .filter("bookName='三国演义'")
+            .limit(10)
+            .projections(Arrays.asList("id", "segment"))
+            .build();
+
+        SearchRowResponse searchResponse = mochowClient.bm25Search(DATABASE, TABLE, searchRequest);
+        System.out.printf("BM25Search result: %s\n", JsonUtils.toJsonString(searchResponse.getRows()));
+    }
+
+    public void hybridSearch() throws MochowClientException, InterruptedException {
+        FloatVector vector = new FloatVector(Arrays.asList(1F, 0.21F, 0.213F, 0F));
+        VectorTopkSearchRequest vectorRequest = VectorTopkSearchRequest.builder("vector", vector, 10)
+            .config(new VectorSearchConfig().setEf(200))
+            .build();
+        BM25SearchRequest bm25Request = BM25SearchRequest.builder("book_segment_inverted_idx", "吕布").build();
+        HybridSearchRequest searchRequest = HybridSearchRequest.builder(vectorRequest, bm25Request, 0.4F, 0.6F)
+            .filter("bookName='三国演义'")
+            .limit(10)
+            .projections(Arrays.asList("id"))
+            .build();
+
+        SearchRowResponse searchResponse = mochowClient.hybridSearch(DATABASE, TABLE, searchRequest);
+        System.out.printf("HybridSearch result: %s\n", JsonUtils.toJsonString(searchResponse.getRows()));
     }
 
     public void changeTableSchema() throws MochowClientException {

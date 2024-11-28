@@ -13,15 +13,21 @@
 
 package com.baidu.mochow.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.baidu.mochow.model.enums.InvertedIndexAnalyzer;
+import com.baidu.mochow.model.enums.InvertedIndexParseMode;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class SearchResultRow {
-    private Row row;
-    private float distance;
-    private float score;
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class InvertedIndexParams implements IndexParams {
+    private InvertedIndexAnalyzer analyzer;
+    private InvertedIndexParseMode parseMode;
+
+    public InvertedIndexParams(InvertedIndexAnalyzer analyzer, InvertedIndexParseMode parseMode) {
+        this.analyzer = analyzer;
+        this.parseMode = parseMode;
+    }
 }

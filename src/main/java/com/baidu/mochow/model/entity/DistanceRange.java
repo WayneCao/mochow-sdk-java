@@ -11,26 +11,22 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.baidu.mochow.model.enums;
+package com.baidu.mochow.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    PUCK("PUCK"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED");
-
-
-    private final String value;
-
-    private IndexType(String value) {
-        this.value = value;
+public class DistanceRange {
+    public DistanceRange(float min, float max) {
+        this.min = min;
+        this.max = max;
     }
 
-    @JsonValue
-    public String getValue() {
-        return value;
+    public float getMin() {
+        return min;
     }
+
+    public float getMax() {
+        return max;
+    }
+
+    private float min;
+    private float max;
 }
