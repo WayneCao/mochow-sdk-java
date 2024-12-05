@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ShowTableStatsResponse extends AbstractMochowResponse {
-    private int rowCount;
-    private int memorySizeInByte;
-    private int diskSizeInByte;
+    private long rowCount;
+    private long memorySizeInByte;
+    private long diskSizeInByte;
 }
