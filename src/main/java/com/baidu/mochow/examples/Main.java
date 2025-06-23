@@ -2,6 +2,7 @@ package com.baidu.mochow.examples;
 
 import com.baidu.mochow.auth.Credentials;
 import com.baidu.mochow.client.ClientConfiguration;
+import com.baidu.mochow.model.enums.IndexType;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,7 +13,7 @@ public class Main {
         ClientConfiguration clientConfiguration = new ClientConfiguration();
         clientConfiguration.setCredentials(new Credentials(account, apiKey));
         clientConfiguration.setEndpoint(endpoint);
-        MochowExample example = new MochowExample(clientConfiguration);
+        MochowExample example = new MochowExample(clientConfiguration, IndexType.HNSW);
         example.example();
         System.out.println("Finish to execute mochow example");
         System.exit(0);

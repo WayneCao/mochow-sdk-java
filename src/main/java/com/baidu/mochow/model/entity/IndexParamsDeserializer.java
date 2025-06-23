@@ -20,8 +20,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 
+import com.baidu.mochow.model.enums.IndexType;
 import com.baidu.mochow.util.JsonUtils;
-import com.baidu.mochow.exception.MochowServiceException;
 
 public class IndexParamsDeserializer extends JsonDeserializer<IndexParams> {
     @Override
@@ -30,21 +30,28 @@ public class IndexParamsDeserializer extends JsonDeserializer<IndexParams> {
         Object o = p.getCurrentValue();
         if (o instanceof IndexField) {
             IndexField indexField = (IndexField) o;
+            IndexParams params = null;
             if (indexField.isVectorIndex()) {
-                IndexParams params = null;
+                // vector index
                 switch (indexField.getIndexType()) {
                     case HNSW:
                         params = JsonUtils.fromJsonString(paramStr, HNSWParams.class);
                         break;
+                    case HNSWPQ:
+                        params = JsonUtils.fromJsonString(paramStr, HNSWPQParams.class);
+                        break;
                     case PUCK:
                         params = JsonUtils.fromJsonString(paramStr, PUCKParams.class);
                         break;
-                    case INVERTED_INDEX:
-                        params = JsonUtils.fromJsonString(paramStr, InvertedIndexParams.class);
+                    case SPARSE_OPTIMIZED_FLAT:
+                        params = null;
                         break;
                 }
-                return params;
+            } else if (indexField.getIndexType().equals(IndexType.INVERTED_INDEX)) {
+                // inverted index
+                params = JsonUtils.fromJsonString(paramStr, InvertedIndexParams.class);
             }
+            return params;
         }
         return null;
     }

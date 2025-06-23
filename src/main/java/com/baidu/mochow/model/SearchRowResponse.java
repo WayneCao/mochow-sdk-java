@@ -32,4 +32,7 @@ public class SearchRowResponse extends AbstractMochowResponse  {
 
     @JsonProperty("results")
     List<BatchSearchResultRows> batchRows; // for batch search
+
+    @JsonProperty("iteratedIds")
+    String iteratedIds;
 }

@@ -18,15 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.baidu.mochow.model.entity.AdvancedOptions;
-import com.baidu.mochow.model.entity.DistanceRange;
 import com.baidu.mochow.model.entity.GeneralParams;
-import com.baidu.mochow.model.entity.Vector;
-import com.baidu.mochow.model.entity.VectorSearchConfig;
+import com.baidu.mochow.model.entity.FusionRankPolicy;
 import com.baidu.mochow.model.enums.ReadConsistency;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public class VectorBatchSearchRequest implements VectorSearchRequestInterface {
-    private VectorBatchSearchRequest(VectorSearchFields fields) {
+public class MultiVectorSearchRequest implements VectorSearchRequestInterface {
+    private MultiVectorSearchRequest(MultiVectorSearchFields fields) {
         this.fields = fields;
     }
 
@@ -40,27 +38,40 @@ public class VectorBatchSearchRequest implements VectorSearchRequestInterface {
 
     @Override
     public String requestType() {
-        return "batchSearch";
+        return "multiVectorSearch";
     }
 
     @Override
     public int getLimit() {
-        return fields.limit;    
+        return fields.limit;
     }
 
-    public static Builder builder(String vectorField, List<Vector> vectors) {
-        return new Builder(vectorField, vectors);
+    public String getIteratedIds() {
+        return fields.iteratedIds;
     }
 
-    public static class Builder {
-        Builder(String vectorField, List<Vector> vectors) {
-            this.fields = new VectorSearchFields();
-            this.fields.vectorField = vectorField;
-            this.fields.vectors = vectors;
+    public void setIteratedIds(String iteratedIds) {
+        fields.iteratedIds = iteratedIds;
+        fields.hasIteratedIds = true;
+    }
+
+    public static Builder builder(List<SingleVectorSearchRequestInterface> requests) {
+        return new Builder(requests);
+    }
+
+    public static class Builder{
+        Builder(List<SingleVectorSearchRequestInterface> requests) {
+            this.fields = new MultiVectorSearchFields();
+            this.fields.requests = requests;
         }
 
-        public VectorBatchSearchRequest build() {
-            return new VectorBatchSearchRequest(this.fields);
+        public MultiVectorSearchRequest build() {
+            return new MultiVectorSearchRequest(this.fields);
+        }
+
+        public Builder rankPolicy(FusionRankPolicy policy) {
+            this.fields.ranking = policy;
+            return this;
         }
 
         public Builder partitionKey(GeneralParams partitionKey) {
@@ -78,27 +89,14 @@ public class VectorBatchSearchRequest implements VectorSearchRequestInterface {
             return this;
         }
 
-        public Builder limit(int count) {
-            this.fields.limit = count;
-            this.fields.hasLimit = true;
-            return this;
-        }
-
-        public Builder distanceRange(DistanceRange distanceRange) {
-            this.fields.distanceFar = distanceRange.getMax();
-            this.fields.hasDistanceFar = true;
-            this.fields.distanceNear = distanceRange.getMin();
-            this.fields.hasDistanceNear = true;
-            return this;
-        }
-
         public Builder filter(String filter) {
             this.fields.filter = filter;
             return this;
         }
 
-        public Builder config(VectorSearchConfig config) {
-            this.fields.config = config;
+        public Builder limit(int limit) {
+            this.fields.hasLimit = true;
+            this.fields.limit = limit;
             return this;
         }
 
@@ -107,7 +105,14 @@ public class VectorBatchSearchRequest implements VectorSearchRequestInterface {
             return this;
         }
 
-        private VectorSearchFields fields;
+        public Builder iteratedIds(String iteratedIds) {
+            this.fields.iteratedIds = iteratedIds;
+            this.fields.hasIteratedIds = true;
+            return this;
+        }
+
+        private MultiVectorSearchFields fields;
     }
-    private VectorSearchFields fields;
+
+    private MultiVectorSearchFields fields;
 }

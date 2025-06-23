@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Baidu, Inc.
+ * Copyright 2025 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,29 +11,27 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.baidu.mochow.model.enums;
+package com.baidu.mochow.model.entity;
+
+import java.util.Base64;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    HNSWPQ("HNSWPQ"),
-    PUCK("PUCK"),
-    SPARSE_OPTIMIZED_FLAT("SPARSE_OPTIMIZED_FLAT"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED"),
-    FILTERING_INDEX("FILTERING");
+public class BinaryVector implements Vector {
+    private byte[] value;
 
-
-    private final String value;
-
-    private IndexType(String value) {
+    public BinaryVector(byte[] value) {
         this.value = value;
     }
 
-    @JsonValue
-    public String getValue() {
-        return value;
+    @Override
+    public String name() {
+        return "vector";
     }
-}
+
+    @JsonValue
+    @Override
+    public Object representation() {
+        return Base64.getEncoder().encodeToString(value);
+    }
+} 

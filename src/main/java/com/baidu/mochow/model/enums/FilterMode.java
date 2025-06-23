@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Baidu, Inc.
+ * Copyright 2025 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -15,36 +15,13 @@ package com.baidu.mochow.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FieldType {
-    BOOL("BOOL"),
-    INT8("INT8"),
-    UINT8("UINT8"),
-    INT16("INT16"),
-    UINT16("UINT16"),
-    INT32("INT32"),
-    UINT32("UINT32"),
-    INT64("INT64"),
-    UINT64("UINT64"),
-    FLOAT("FLOAT"),
-    DOUBLE("DOUBLE"),
-    DATE("DATE"),
-    DATETIME("DATETIME"),
-    TIMESTAMP("TIMESTAMP"),
-    STRING("STRING"),
-    BINARY("BINARY"),
-    UUID("UUID"),
-    TEXT("TEXT"),
-    TEXT_GBK("TEXT_GBK"),
-    TEXT_GB18030("TEXT_GB18030"),
-    ARRAY("ARRAY"),
-    JSON("JSON"),
-    FLOAT_VECTOR("FLOAT_VECTOR"),
-    BINARY_VECTOR("BINARY_VECTOR"),
-    SPARSE_FLOAT_VECTOR("SPARSE_FLOAT_VECTOR");
+public enum FilterMode {
+    AUTO("AUTO"),
+    POST("POST");
 
     private final String value;
 
-    private FieldType(String value) {
+    private FilterMode(String value) {
         this.value = value;
     }
 
@@ -52,4 +29,4 @@ public enum FieldType {
     public String getValue() {
         return value;
     }
-}
+} 

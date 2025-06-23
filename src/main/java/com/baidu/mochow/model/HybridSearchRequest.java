@@ -17,10 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.baidu.mochow.model.SearchRequest.BM25SearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.HybridSearchFields;
-import com.baidu.mochow.model.SearchRequest.HybridSearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.VectorSearchRequestInterface;
 import com.baidu.mochow.model.entity.GeneralParams;
 import com.baidu.mochow.model.enums.ReadConsistency;
 import com.fasterxml.jackson.annotation.JsonValue;

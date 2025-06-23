@@ -24,6 +24,9 @@ import com.baidu.mochow.model.enums.InvertedIndexFieldAttribute;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class InvertedIndex extends IndexField {
+    private String[] fields;
+    private InvertedIndexFieldAttribute[] fieldAttributes;
+
     public InvertedIndex(String indexName, String[] fields) {
         setIndexName(indexName);
         setFields(fields);

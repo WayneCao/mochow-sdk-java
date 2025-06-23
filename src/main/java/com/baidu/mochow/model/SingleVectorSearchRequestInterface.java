@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Baidu, Inc.
+ * Copyright 2025 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -13,19 +13,5 @@
 
 package com.baidu.mochow.model;
 
-import java.util.List;
-
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import com.baidu.mochow.model.entity.SearchResultRow;
-
-@Getter
-@Setter
-@NoArgsConstructor
-public class SearchResponse extends AbstractMochowResponse {
-    private List<Float> searchVectorFloats;
-    private List<SearchResultRow> rows;
-    private List<String> iteratedIds;
-}
+public interface SingleVectorSearchRequestInterface extends VectorSearchRequestInterface {
+} 

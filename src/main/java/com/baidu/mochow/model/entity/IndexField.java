@@ -23,7 +23,6 @@ import lombok.Setter;
 
 import com.baidu.mochow.model.enums.IndexState;
 import com.baidu.mochow.model.enums.IndexType;
-import com.baidu.mochow.model.enums.InvertedIndexFieldAttribute;
 import com.baidu.mochow.model.enums.MetricType;
 
 @Getter
@@ -34,8 +33,7 @@ import com.baidu.mochow.model.enums.MetricType;
 public class IndexField {
     private String indexName;
     private String field;
-    private String[] fields;
-    private InvertedIndexFieldAttribute[] fieldAttributes;
+
     private IndexType indexType;
     private IndexState state;
 
@@ -51,6 +49,8 @@ public class IndexField {
 
     @JsonIgnore
     public boolean isVectorIndex() {
-        return this.indexType.equals(IndexType.HNSW) || this.indexType.equals(IndexType.PUCK);
+        return this.indexType.equals(IndexType.HNSW) || this.indexType.equals(IndexType.PUCK)
+                || this.indexType.equals(IndexType.HNSWPQ)
+                || this.indexType.equals(IndexType.SPARSE_OPTIMIZED_FLAT);
     }
 }

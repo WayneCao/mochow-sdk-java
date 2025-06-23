@@ -16,9 +16,9 @@ package com.baidu.mochow.model.enums;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum AutoBuildPolicyType {
-    TIMING("TIMING"),
-    PERIODICAL("PERIODICAL"),
-    ROW_COUNT_INCREMENT("ROW_COUNT_INCREMENT");
+    TIMING("timing"),
+    PERIODICAL("periodical"),
+    ROW_COUNT_INCREMENT("row_count_increment");
 
     private final String value;
 

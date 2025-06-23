@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Baidu, Inc.
+ * Copyright 2025 Baidu, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -14,58 +14,57 @@
 package com.baidu.mochow.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import com.baidu.mochow.model.entity.IndexField;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ModifyIndexRequest extends AbstractMochowRequest {
+public class ModifyTableRequest extends AbstractMochowRequest {
     private String database;
     private String table;
-    private IndexField index;
+    private double datanodeMemoryReservedInGB;
 
-    private ModifyIndexRequest(ModifyIndexRequest.Builder builder) {
+    private ModifyTableRequest(ModifyTableRequest.Builder builder) {
         this.database = builder.database;
         this.table = builder.table;
-        this.index = builder.index;
+        this.datanodeMemoryReservedInGB = builder.datanodeMemoryReservedInGB;
     }
 
-    public static ModifyIndexRequest.Builder builder() {
-        return new ModifyIndexRequest.Builder();
+    public static ModifyTableRequest.Builder builder() {
+        return new ModifyTableRequest.Builder();
     }
 
     public static class Builder {
         private String database;
         private String table;
-        private IndexField index;
+        private double datanodeMemoryReservedInGB;
 
         private Builder() {
+            this.datanodeMemoryReservedInGB = 0.0;
         }
 
-        public ModifyIndexRequest.Builder database(String database) {
+        public ModifyTableRequest.Builder database(String database) {
             this.database = database;
             return this;
         }
 
-        public ModifyIndexRequest.Builder table(String table) {
+        public ModifyTableRequest.Builder table(String table) {
             this.table = table;
             return this;
         }
 
-        public ModifyIndexRequest.Builder index(IndexField index) {
-            this.index = index;
+        public ModifyTableRequest.Builder datanodeMemoryReservedInGB(double datanodeMemoryReservedInGB) {
+            this.datanodeMemoryReservedInGB = datanodeMemoryReservedInGB;
             return this;
         }
 
-        public ModifyIndexRequest build() {
-            return new ModifyIndexRequest(this);
+        public ModifyTableRequest build() {
+            return new ModifyTableRequest(this);
         }
     }
-}
+} 
