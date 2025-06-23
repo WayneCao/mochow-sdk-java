@@ -11,29 +11,29 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.baidu.mochow.model.enums;
+package com.baidu.mochow.model.entity;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    HNSWPQ("HNSWPQ"),
-    PUCK("PUCK"),
-    SPARSE_OPTIMIZED_FLAT("SPARSE_OPTIMIZED_FLAT"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED"),
-    FILTERING_INDEX("FILTERING");
-
-
-    private final String value;
-
-    private IndexType(String value) {
-        this.value = value;
+public class RRFRank implements FusionRankPolicy {
+    public RRFRank(int k) {
+        this.k = k;
     }
 
     @JsonValue
-    public String getValue() {
-        return value;
+    @Override
+    public Object representation() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("k", this.k);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("strategy", "rrf");
+        map.put("params", params);
+        return map;
     }
+
+    private int k;
 }

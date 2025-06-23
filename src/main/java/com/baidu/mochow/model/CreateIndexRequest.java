@@ -13,23 +13,63 @@
 
 package com.baidu.mochow.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import com.baidu.mochow.model.entity.IndexField;
 
 @Getter
 @Setter
-@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class CreateIndexRequest extends AbstractMochowRequest {
     private String database;
     private String table;
     private List<IndexField> indexes;
+
+    private CreateIndexRequest(CreateIndexRequest.Builder builder) {
+        this.database = builder.database;
+        this.table = builder.table;
+        this.indexes = builder.indexes;
+    }
+
+    public static CreateIndexRequest.Builder builder() {
+        return new CreateIndexRequest.Builder();
+    }
+
+    public static class Builder {
+        private String database;
+        private String table;
+        private List<IndexField> indexes;
+
+        private Builder() {
+            this.indexes = new ArrayList<>();
+        }
+
+        public CreateIndexRequest.Builder database(String database) {
+            this.database = database;
+            return this;
+        }
+
+        public CreateIndexRequest.Builder table(String table) {
+            this.table = table;
+            return this;
+        }
+
+        public CreateIndexRequest.Builder addIndex(IndexField field) {
+            this.indexes.add(field);
+            return this;
+        }
+
+        public CreateIndexRequest build() {
+            return new CreateIndexRequest(this);
+        }
+    }
 }

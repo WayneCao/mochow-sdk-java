@@ -11,29 +11,8 @@
  * specific language governing permissions and limitations under the License.
  */
 
-package com.baidu.mochow.model.enums;
+package com.baidu.mochow.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
-public enum IndexType {
-    FLAT("FLAT"),
-    HNSW("HNSW"),
-    HNSWPQ("HNSWPQ"),
-    PUCK("PUCK"),
-    SPARSE_OPTIMIZED_FLAT("SPARSE_OPTIMIZED_FLAT"),
-    SECONDARY_INDEX("SECONDARY"),
-    INVERTED_INDEX("INVERTED"),
-    FILTERING_INDEX("FILTERING");
-
-
-    private final String value;
-
-    private IndexType(String value) {
-        this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
+public interface FusionRankPolicy {
+    Object representation();
 }

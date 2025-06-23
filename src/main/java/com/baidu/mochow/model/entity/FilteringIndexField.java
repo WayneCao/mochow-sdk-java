@@ -14,29 +14,22 @@
 package com.baidu.mochow.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.baidu.mochow.model.enums.InvertedIndexAnalyzer;
-import com.baidu.mochow.model.enums.InvertedIndexParseMode;
+
+import com.baidu.mochow.model.enums.IndexStructureType;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class InvertedIndexParams implements IndexParams {
-    private InvertedIndexAnalyzer analyzer;
-    private InvertedIndexParseMode parseMode;
-    private boolean caseSensitive = true;
+public class FilteringIndexField {
+    private String field;
+    private IndexStructureType indexStructureType;
 
-    public InvertedIndexParams(InvertedIndexAnalyzer analyzer, InvertedIndexParseMode parseMode) {
-        this.analyzer = analyzer;
-        this.parseMode = parseMode;
-    }
-
-    public InvertedIndexParams(InvertedIndexAnalyzer analyzer, InvertedIndexParseMode parseMode, boolean caseSensitive) {
-        this.analyzer = analyzer;
-        this.parseMode = parseMode;
-        this.caseSensitive = caseSensitive;
+    public FilteringIndexField(String field) {
+        setField(field);
+        setIndexStructureType(IndexStructureType.DEFAULT);
     }
 }

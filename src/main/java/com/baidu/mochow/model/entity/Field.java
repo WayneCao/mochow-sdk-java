@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.baidu.mochow.model.enums.ElementType;
 import com.baidu.mochow.model.enums.FieldType;
 
 @Getter
@@ -37,4 +38,10 @@ public class Field {
     private Boolean notNull;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int dimension;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private ElementType elementType;
+
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+    private int maxCapacity;
 }

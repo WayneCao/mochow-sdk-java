@@ -15,36 +15,13 @@ package com.baidu.mochow.model.enums;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FieldType {
-    BOOL("BOOL"),
-    INT8("INT8"),
-    UINT8("UINT8"),
-    INT16("INT16"),
-    UINT16("UINT16"),
-    INT32("INT32"),
-    UINT32("UINT32"),
-    INT64("INT64"),
-    UINT64("UINT64"),
-    FLOAT("FLOAT"),
-    DOUBLE("DOUBLE"),
-    DATE("DATE"),
-    DATETIME("DATETIME"),
-    TIMESTAMP("TIMESTAMP"),
-    STRING("STRING"),
-    BINARY("BINARY"),
-    UUID("UUID"),
-    TEXT("TEXT"),
-    TEXT_GBK("TEXT_GBK"),
-    TEXT_GB18030("TEXT_GB18030"),
-    ARRAY("ARRAY"),
-    JSON("JSON"),
-    FLOAT_VECTOR("FLOAT_VECTOR"),
-    BINARY_VECTOR("BINARY_VECTOR"),
-    SPARSE_FLOAT_VECTOR("SPARSE_FLOAT_VECTOR");
+public enum IndexStructureType {
+    DEFAULT("DEFAULT"),
+    BITMAP("BITMAP");
 
     private final String value;
 
-    private FieldType(String value) {
+    private IndexStructureType(String value) {
         this.value = value;
     }
 

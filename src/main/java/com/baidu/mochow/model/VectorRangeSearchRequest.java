@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.baidu.mochow.model.SearchRequest.VectorSearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.VectorSearchFields;
+import com.baidu.mochow.model.entity.AdvancedOptions;
 import com.baidu.mochow.model.entity.DistanceRange;
 import com.baidu.mochow.model.entity.GeneralParams;
 import com.baidu.mochow.model.entity.Vector;
@@ -26,7 +25,7 @@ import com.baidu.mochow.model.entity.VectorSearchConfig;
 import com.baidu.mochow.model.enums.ReadConsistency;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public class VectorRangeSearchRequest implements VectorSearchRequestInterface {
+public class VectorRangeSearchRequest implements SingleVectorSearchRequestInterface {
     private VectorRangeSearchRequest(VectorSearchFields fields) {
         this.fields = fields;
     }
@@ -42,6 +41,11 @@ public class VectorRangeSearchRequest implements VectorSearchRequestInterface {
     @Override
     public String requestType() {
         return "search";
+    }
+
+    @Override
+    public int getLimit() {
+        return fields.limit;    
     }
 
     public static Builder builder(String vectorField, Vector vector, DistanceRange range) {
@@ -91,6 +95,11 @@ public class VectorRangeSearchRequest implements VectorSearchRequestInterface {
 
         public Builder config(VectorSearchConfig config) {
             this.fields.config = config;
+            return this;
+        }
+
+        public Builder advancedOptions(AdvancedOptions advancedOptions) {
+            this.fields.advancedOptions = advancedOptions;
             return this;
         }
 

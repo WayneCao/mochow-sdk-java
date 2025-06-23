@@ -14,9 +14,7 @@
 package com.baidu.mochow.model;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
@@ -26,8 +24,6 @@ import lombok.Setter;
 
 import com.baidu.mochow.model.entity.ANNSearchParams;
 import com.baidu.mochow.model.entity.GeneralParams;
-import com.baidu.mochow.model.entity.Vector;
-import com.baidu.mochow.model.entity.VectorSearchConfig;
 import com.baidu.mochow.model.enums.ReadConsistency;
 
 @Getter
@@ -119,160 +115,5 @@ public class SearchRequest extends AbstractMochowRequest {
         public SearchRequest build() {
             return new SearchRequest(this);
         }
-    }
-
-    static class SearchCommonFields {
-        public GeneralParams partitionKey;
-        public List<String> projections;
-        public ReadConsistency readConsistency;
-        public boolean hasLimit;
-        public int limit;
-        public String filter;
-    }
-
-    static Map<String, Object> searchCommonFieldsToMap(SearchCommonFields fields) {
-        Map<String, Object> map = new HashMap<>();
-        if (fields.partitionKey != null) {
-            map.put("partitionKey", fields.partitionKey);
-        }
-        if (fields.projections != null) {
-            map.put("projections", fields.projections);
-        }
-        if (fields.readConsistency != null) {
-            map.put("readConsistency", fields.readConsistency);
-        }
-        if (fields.hasLimit) {
-            map.put("limit", fields.limit);
-        }
-        if (fields.filter != null) {
-            map.put("filter", fields.filter);
-        }
-        return map;
-    }
-
-    static class VectorSearchFields extends SearchCommonFields {
-        public void fillSearchFields(Map<String, Object> fields) {
-            // anns.params
-            Map<String, Object> params = new HashMap<>();
-            if (hasDistanceNear) {
-                params.put("distanceNear", distanceNear);
-            }
-            if (hasDistanceFar) {
-                params.put("distanceFar", distanceFar);
-            }
-            if (hasLimit) {
-                params.put("limit", limit);
-            }
-            if (config != null) {
-                config.toMap().forEach(params::put);
-            }
-
-            // anns
-            Map<String, Object> anns = new HashMap<>();
-            if (!vectorField.isEmpty()) {
-                anns.put("vectorField", vectorField);
-            }
-            if (vector != null) {
-                anns.put(vector.name(), vector.representation());
-            }
-            if (vectors != null && !vectors.isEmpty()) {
-                List<Object> vecs = new ArrayList<>();
-                for (Vector v : vectors) {
-                    vecs.add(v.representation());
-                }
-                anns.put(vectors.get(0).name(), vecs);
-            }
-            if (filter != null) {
-                anns.put("filter", filter);
-            }
-            if (!params.isEmpty()) {
-                anns.put("params", params);
-            }
-            if (!anns.isEmpty()) {
-                fields.put("anns", anns);
-            }
-
-            // common fields
-            for (Map.Entry<String, Object> entry : searchCommonFieldsToMap((SearchCommonFields) this).entrySet()) {
-                if (entry.getKey().equals("filter") || entry.getKey().equals("limit")) { // in "anns"
-                    continue;
-                }
-                fields.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        public String vectorField;
-        public Vector vector;
-        public List<Vector> vectors;
-        public boolean hasDistanceNear;
-        public float distanceNear;
-        public boolean hasDistanceFar;
-        public float distanceFar;
-        public VectorSearchConfig config;
-    }
-
-    static class BM25SearchFields extends SearchCommonFields {
-        public void fillSearchFields(Map<String, Object> fields) {
-            for (Map.Entry<String, Object> entry : searchCommonFieldsToMap((SearchCommonFields) this).entrySet()) {
-                fields.put(entry.getKey(), entry.getValue());
-            }
-
-            Map<String, Object> params = new HashMap<>();
-            params.put("indexName", indexName);
-            params.put("searchText", searchText);
-
-            fields.put("BM25SearchParams", params);
-        }
-
-        public String indexName;
-        public String searchText;
-    }
-
-    static class HybridSearchFields extends SearchCommonFields{
-        public void fillSearchFields(Map<String, Object> fields) {
-            if (vectorRequest != null) {
-                vectorRequest.toMap().forEach(fields::put);
-            }
-
-            if (bm25Request != null) {
-                bm25Request.toMap().forEach(fields::put);
-
-            }
-
-            for (Map.Entry<String, Object> entry : searchCommonFieldsToMap((SearchCommonFields) this).entrySet()) {
-                fields.put(entry.getKey(), entry.getValue());
-            }
-
-            if (fields.containsKey("anns")) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> anns = (Map<String, Object>) fields.get("anns");
-                anns.put("weight", vectorWeight);
-            }
-
-            if (fields.containsKey("BM25SearchParams")) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> bm25 = (Map<String, Object>) fields.get("BM25SearchParams");
-                bm25.put("weight", bm25Weight);
-            }
-        }
-
-        VectorSearchRequestInterface vectorRequest;
-        BM25SearchRequestInterface bm25Request;
-        float vectorWeight;
-        float bm25Weight;
-    }
-
-    public interface SearchRequestInterface {
-        String requestType();
-        Map<String, Object> toMap();
-    }
-
-    public interface VectorSearchRequestInterface extends SearchRequestInterface {
-    }
-
-    public interface BM25SearchRequestInterface extends SearchRequestInterface {
-    }
-
-    public interface HybridSearchRequestInterface extends SearchRequestInterface {
     }
 }

@@ -10,6 +10,7 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
+
 package com.baidu.mochow.client;
 
 import org.slf4j.Logger;
@@ -72,10 +73,13 @@ import com.baidu.mochow.model.UpsertRequest;
 import com.baidu.mochow.model.BatchSearchRequest;
 import com.baidu.mochow.model.BatchSearchResponse;
 import com.baidu.mochow.model.UpsertResponse;
-import com.baidu.mochow.model.SearchRequest.BM25SearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.HybridSearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.SearchRequestInterface;
-import com.baidu.mochow.model.SearchRequest.VectorSearchRequestInterface;
+import com.baidu.mochow.model.ModifyTableRequest;
+import com.baidu.mochow.model.SearchIterator;
+import com.baidu.mochow.model.SearchIteratorArgs;
+import com.baidu.mochow.model.VectorSearchRequestInterface;
+import com.baidu.mochow.model.BM25SearchRequestInterface;
+import com.baidu.mochow.model.HybridSearchRequestInterface;
+import com.baidu.mochow.model.SearchRequestInterface;
 
 /**
  * Provides the client for accessing the Baidu VDB Service.
@@ -104,6 +108,7 @@ public class MochowClient extends AbstractMochowClient {
     private static final String QUERY = "query";
     private static final String SEARCH = "search";
     private static final String BATCH_SEARCH = "batchSearch";
+    private static final String MULTI_VECTOR_SEARCH = "multiVectorSearch";
     private static final String UPDATE = "update";
     private static final String SELECT = "select";
 
@@ -175,7 +180,7 @@ public class MochowClient extends AbstractMochowClient {
 
     public void dropTable(String databaseName, String tableName) throws MochowClientException {
         InternalRequest internalRequest = this.createRequest(
-                new AbstractMochowRequest() {}, HttpMethodName.DELETE, TABLE_PREFIX);
+            new AbstractMochowRequest() {}, HttpMethodName.DELETE, TABLE_PREFIX);
         internalRequest.addParameter("database", databaseName);
         internalRequest.addParameter("table", tableName);
         this.invokeHttpClient(internalRequest, AbstractMochowResponse.class);
@@ -367,6 +372,17 @@ public class MochowClient extends AbstractMochowClient {
         internalRequest.addParameter(SELECT, "");
         fillPayload(internalRequest, request);
         return this.invokeHttpClient(internalRequest, SelectResponse.class);
+    }
+
+    public void modifyTable(ModifyTableRequest request) throws MochowClientException {
+        InternalRequest internalRequest = this.createRequest(request, HttpMethodName.POST, TABLE_PREFIX);
+        internalRequest.addParameter(MODIFY, "");
+        fillPayload(internalRequest, request);
+        this.invokeHttpClient(internalRequest, AbstractMochowResponse.class);
+    }
+
+    public SearchIterator searchIterator(SearchIteratorArgs args) {
+        return new SearchIterator(this, args);
     }
 
     /**
