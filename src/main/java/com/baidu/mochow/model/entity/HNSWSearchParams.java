@@ -24,10 +24,10 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class HNSWSearchParams extends SearchParams {
     private int ef;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private float distanceNear;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private float distanceFar;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Float distanceNear;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Float distanceFar;
     private boolean pruning;
 
     private HNSWSearchParams(Builder builder) {
@@ -45,14 +45,14 @@ public class HNSWSearchParams extends SearchParams {
     public static class Builder {
         private int limit;
         private int ef;
-        private float distanceNear;
-        private float distanceFar;
+        private Float distanceNear;
+        private Float distanceFar;
         boolean pruning;
 
         public Builder() {
             this.limit = 50;
-            this.distanceNear = 0.0f;
-            this.distanceFar = 0.0f;
+            this.distanceNear = null;
+            this.distanceFar = null;
             this.pruning = true;
         }
 
