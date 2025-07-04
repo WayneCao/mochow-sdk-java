@@ -21,10 +21,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FLATSearchParams extends SearchParams {
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private float distanceNear;
-    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-    private float distanceFar;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Float distanceNear;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Float distanceFar;
 
     private FLATSearchParams(Builder builder) {
         setLimit(builder.limit);
@@ -38,11 +38,13 @@ public class FLATSearchParams extends SearchParams {
 
     public static class Builder {
         private int limit;
-        private float distanceNear;
-        private float distanceFar;
+        private Float distanceNear;
+        private Float distanceFar;
 
         public Builder() {
             this.limit = 50;
+            this.distanceNear = null;
+            this.distanceFar = null;
         }
 
         public Builder limit(int limit) {
